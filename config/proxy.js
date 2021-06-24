@@ -9,28 +9,29 @@
 export default {
   dev: {
     '/api/': {
-      target: 'https://preview.pro.ant.design',
+      target: 'http://[::1]:3000/',
       changeOrigin: true,
       pathRewrite: {
-        '^': '',
+        '^/api/': '',
+        // '^': '',
       },
     },
   },
   test: {
     '/api/': {
-      target: 'https://preview.pro.ant.design',
+      target: 'http://[::1]:3000/',
       changeOrigin: true,
       pathRewrite: {
-        '^': '',
+        '^/api/': '',
       },
     },
   },
   pre: {
     '/api/': {
-      target: 'your pre url',
+      target: 'http://[::1]:3000/',
       changeOrigin: true,
       pathRewrite: {
-        '^': '',
+        '^/api/': '',
       },
     },
   },

@@ -1,17 +1,13 @@
 import {
-  AlipayCircleOutlined,
   LockOutlined,
   MailOutlined,
   MobileOutlined,
-  TaobaoCircleOutlined,
   UserOutlined,
-  WeiboCircleOutlined,
 } from '@ant-design/icons';
 import { Alert, Space, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-import { getFakeCaptcha } from '@/services/login';
 import styles from './index.less';
 
 const LoginMessage = ({ content }) => (
@@ -27,16 +23,23 @@ const LoginMessage = ({ content }) => (
 
 const Login = (props) => {
   const { userLogin = {}, submitting } = props;
-  const { status, type: loginType } = userLogin;
-  const [type, setType] = useState('account');
+  const { status } = userLogin;
+  const [type, setType] = useState('account');  // type = ['account', 'register']
   const intl = useIntl();
 
   const handleSubmit = (values) => {
     const { dispatch } = props;
-    dispatch({
-      type: 'login/login',
-      payload: { ...values, type },
-    });
+    if (type === 'account') {
+      dispatch({
+        type: 'login/login',
+        payload: { ...values, type },
+      });
+    } else {  // register 
+      dispatch({
+        type: 'user/register',
+        payload: { ...values, type },
+      });
+    }
   };
 
   return (
@@ -60,7 +63,7 @@ const Login = (props) => {
           return Promise.resolve();
         }}
       >
-        <Tabs activeKey={type} onChange={setType}>
+        <Tabs activeKey={type} onChange={setType}>  {/* 账号密码登录&注册 */}
           <Tabs.TabPane
             key="account"
             tab={intl.formatMessage({
@@ -69,26 +72,27 @@ const Login = (props) => {
             })}
           />
           <Tabs.TabPane
-            key="mobile"
+            key="register"
             tab={intl.formatMessage({
-              id: 'pages.login.phoneLogin.tab',
-              defaultMessage: 'Mobile phone number login',
+              id: 'pages.login.registerAccount',
+              defaultMessage: 'Register New Account',
             })}
           />
         </Tabs>
 
-        {status === 'error' && loginType === 'account' && !submitting && (
+        {/* 账号密码错误 */}
+        {status === 'error' && type === 'account' && !submitting && (
           <LoginMessage
             content={intl.formatMessage({
               id: 'pages.login.accountLogin.errorMessage',
-              defaultMessage: 'Incorrect account or password（admin/ant.design)',
+              defaultMessage: 'Incorrect account or password',
             })}
           />
         )}
         {type === 'account' && (
           <>
             <ProFormText
-              name="userName"
+              name="name"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
@@ -117,7 +121,7 @@ const Login = (props) => {
               }}
               placeholder={intl.formatMessage({
                 id: 'pages.login.password.placeholder',
-                defaultMessage: 'Password: ant.design',
+                defaultMessage: 'Please enter password',
               })}
               rules={[
                 {
@@ -134,21 +138,56 @@ const Login = (props) => {
           </>
         )}
 
-        {status === 'error' && loginType === 'mobile' && !submitting && (
-          <LoginMessage content="Verification code error" />
-        )}
-        {type === 'mobile' && (
+        {type === 'register' && (
           <>
+            <ProFormText
+              name="name"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder="用户名"
+              rules={[
+                {
+                  required: true,
+                  message: "用户名是必填项！"
+                },
+                {
+                  pattern: /^.{6,}$/, // 至少6字符 
+                  message: "用户名至少包含6个字符"
+                },
+              ]}
+            />
+            <ProFormText.Password
+              name="password"
+              fieldProps={{
+                size: 'large',
+                prefix: <LockOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder="密码"
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.password.required"
+                      defaultMessage="Please enter password！"
+                    />
+                  ),
+                },
+                {
+                  pattern: /(?=.*\d)(?=.*[a-zA-Z])/,
+                  message: "密码必须包含数字及字母，长度至少为6个字符"
+                },
+              ]}
+            />
             <ProFormText
               fieldProps={{
                 size: 'large',
                 prefix: <MobileOutlined className={styles.prefixIcon} />,
               }}
-              name="mobile"
-              placeholder={intl.formatMessage({
-                id: 'pages.login.phoneNumber.placeholder',
-                defaultMessage: 'Phone number',
-              })}
+              name="phone"
+              placeholder="手机号"
               rules={[
                 {
                   required: true,
@@ -170,7 +209,7 @@ const Login = (props) => {
                 },
               ]}
             />
-            <ProFormCaptcha
+            <ProFormText
               fieldProps={{
                 size: 'large',
                 prefix: <MailOutlined className={styles.prefixIcon} />,
@@ -178,50 +217,27 @@ const Login = (props) => {
               captchaProps={{
                 size: 'large',
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.captcha.placeholder',
-                defaultMessage: 'Please enter verification code',
-              })}
-              captchaTextRender={(timing, count) => {
-                if (timing) {
-                  return `${count} ${intl.formatMessage({
-                    id: 'pages.getCaptchaSecondText',
-                    defaultMessage: 'Get verification code',
-                  })}`;
-                }
-
-                return intl.formatMessage({
-                  id: 'pages.login.phoneLogin.getVerificationCode',
-                  defaultMessage: 'Get verification code',
-                });
-              }}
-              name="captcha"
+              placeholder="邮箱地址"
+              name="email"
               rules={[
                 {
                   required: true,
                   message: (
                     <FormattedMessage
-                      id="pages.login.captcha.required"
+                      id="pages.login.email.required"
                       defaultMessage="Please enter verification code！"
                     />
                   ),
                 },
-              ]}
-              onGetCaptcha={async (mobile) => {
-                const result = await getFakeCaptcha(mobile);
-
-                if (result === false) {
-                  return;
+                {
+                  pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+                  message: "不合法的邮箱地址！"
                 }
-
-                message.success(
-                  'Get the verification code successfully! The verification code is: 1234',
-                );
-              }}
+              ]}
             />
           </>
         )}
-        <div
+        {/* <div
           style={{
             marginBottom: 24,
           }}
@@ -236,19 +252,13 @@ const Login = (props) => {
           >
             <FormattedMessage id="pages.login.forgotPassword" defaultMessage="Forget password" />
           </a>
-        </div>
+        </div> */}
       </ProForm>
-      <Space className={styles.other}>
-        <FormattedMessage id="pages.login.loginWith" defaultMessage="Other login methods" />
-        <AlipayCircleOutlined className={styles.icon} />
-        <TaobaoCircleOutlined className={styles.icon} />
-        <WeiboCircleOutlined className={styles.icon} />
-      </Space>
     </div>
   );
 };
 
 export default connect(({ login, loading }) => ({
   userLogin: login,
-  submitting: loading.effects['login/login'],
+  submitting: loading.effects['login/login'], // login effect是否正在运行
 }))(Login);

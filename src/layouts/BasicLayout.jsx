@@ -37,24 +37,18 @@ const menuDataRender = (menuList) =>
 
 const defaultFooterDom = (
   <DefaultFooter
-    copyright={`${new Date().getFullYear()} Produced by Ant Group Experience Technology Department`}
+    copyright={`${new Date().getFullYear()} Produced by Xiaoyu`}
     links={[
-      {
-        key: 'Ant Design Pro',
-        title: 'Ant Design Pro',
-        href: 'https://pro.ant.design',
-        blankTarget: true,
-      },
       {
         key: 'github',
         title: <GithubOutlined />,
-        href: 'https://github.com/ant-design/ant-design-pro',
+        href: 'https://github.com/famishedfish/BS-project',
         blankTarget: true,
       },
       {
-        key: 'Ant Design',
-        title: 'Ant Design',
-        href: 'https://ant.design',
+        key: 'eIoT',
+        title: '广告位招租',
+        href: 'https://github.com/famishedfish/BS-project',
         blankTarget: true,
       },
     ]}
@@ -65,7 +59,6 @@ const BasicLayout = (props) => {
   const {
     dispatch,
     children,
-    settings,
     location = {
       pathname: '/',
     },
@@ -102,7 +95,6 @@ const BasicLayout = (props) => {
       logo={logo}
       formatMessage={formatMessage}
       {...props}
-      {...settings}
       onCollapse={handleMenuCollapse}
       onMenuHeaderClick={() => history.push('/')}
       menuItemRender={(menuItemProps, defaultDom) => {
@@ -134,21 +126,13 @@ const BasicLayout = (props) => {
         );
       }}
       footerRender={() => {
-        if (settings.footerRender || settings.footerRender === undefined) {
           return defaultFooterDom;
-        }
-
-        return null;
       }}
       menuDataRender={menuDataRender}
       rightContentRender={() => <RightContent />}
       postMenuData={(menuData) => {
         menuDataRef.current = menuData || [];
         return menuData || [];
-      }}
-      waterMarkProps={{
-        content: 'Ant Design Pro',
-        fontColor: 'rgba(24,144,255,0.15)',
       }}
     >
       <Authorized authority={authorized.authority} noMatch={noMatch}>
@@ -158,7 +142,6 @@ const BasicLayout = (props) => {
   );
 };
 
-export default connect(({ global, settings }) => ({
+export default connect(({ global }) => ({
   collapsed: global.collapsed,
-  settings,
 }))(BasicLayout);

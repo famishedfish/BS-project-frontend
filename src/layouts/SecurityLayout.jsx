@@ -26,7 +26,7 @@ class SecurityLayout extends React.Component {
     const { children, loading, currentUser } = this.props; // You can replace it to your authentication rule (such as check token exists)
     // You can replace it with your own login authentication rules (such as judging whether the token exists)
 
-    const isLogin = currentUser && currentUser.userid;
+    const isLogin = currentUser && currentUser.name;
     const queryString = stringify({
       redirect: window.location.href,
     });
@@ -43,7 +43,7 @@ class SecurityLayout extends React.Component {
   }
 }
 
-export default connect(({ user, loading }) => ({
+export default connect(({ user, loading }) => ({  // map state to props
   currentUser: user.currentUser,
   loading: loading.models.user,
 }))(SecurityLayout);

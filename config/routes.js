@@ -25,13 +25,13 @@ export default [
             routes: [
               {
                 path: '/',
-                redirect: '/welcome',
+                redirect: '/home',
               },
               {
-                path: '/welcome',
-                name: 'welcome',
+                path: '/home',
+                name: 'home',
                 icon: 'smile',
-                component: './Welcome',
+                component: './Home',
               },
               {
                 path: '/admin',
@@ -44,7 +44,7 @@ export default [
                     path: '/admin/sub-page',
                     name: 'sub-page',
                     icon: 'smile',
-                    component: './Welcome',
+                    component: './Home',
                     authority: ['admin'],
                   },
                 ],

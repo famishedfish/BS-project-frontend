@@ -2,7 +2,7 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Alert, Typography } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
-import styles from './Welcome.less';
+import styles from './index.less';
 
 const CodePreview = ({ children }) => (
   <pre className={styles.pre}>
@@ -15,9 +15,20 @@ const CodePreview = ({ children }) => (
 export default () => {
   const intl = useIntl();
   return (
-    <PageContainer>
+    // <PageContainer header={{
+    //     title: '首页',
+    //     ghost: true,
+    //     breadcrumb: {
+    //       routes: [
+    //         {
+    //           path: '',
+    //           breadcrumbName: '统计信息',
+    //         },
+    //       ],
+    //     },
+    //   }}>
       <Card>
-        <Alert
+        {/* <Alert
           message={intl.formatMessage({
             id: 'pages.welcome.alertMessage',
             defaultMessage: 'Faster and stronger heavy-duty components have been released.',
@@ -29,7 +40,7 @@ export default () => {
             margin: -12,
             marginBottom: 24,
           }}
-        />
+        /> */}
         <Typography.Text strong>
           <FormattedMessage id="pages.welcome.advancedComponent" defaultMessage="Advanced Form" />{' '}
           <a
@@ -58,6 +69,6 @@ export default () => {
         </Typography.Text>
         <CodePreview>yarn add @ant-design/pro-layout</CodePreview>
       </Card>
-    </PageContainer>
+    // </PageContainer>
   );
 };
