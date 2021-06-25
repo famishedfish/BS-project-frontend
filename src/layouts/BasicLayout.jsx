@@ -12,28 +12,28 @@ import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { getMatchMenu } from '@umijs/route-utils';
 import logo from '../assets/logo.svg';
-const noMatch = (
-  <Result
-    status={403}
-    title="403"
-    subTitle="Sorry, you are not authorized to access this page."
-    extra={
-      <Button type="primary">
-        <Link to="/user/login">Go Login</Link>
-      </Button>
-    }
-  />
-);
+// const noMatch = (
+//   <Result
+//     status={403}
+//     title="403"
+//     subTitle="Sorry, you are not authorized to access this page."
+//     extra={
+//       <Button type="primary">
+//         <Link to="/user/login">Go Login</Link>
+//       </Button>
+//     }
+//   />
+// );
 
 /** Use Authorized check all menu item */
-const menuDataRender = (menuList) =>
-  menuList.map((item) => {
-    const localItem = {
-      ...item,
-      children: item.children ? menuDataRender(item.children) : undefined,
-    };
-    return Authorized.check(item.authority, localItem, null);
-  });
+// const menuDataRender = (menuList) =>
+//   menuList.map((item) => {
+//     const localItem = {
+//       ...item,
+//       children: item.children ? menuDataRender(item.children) : undefined,
+//     };
+//     return Authorized.check(item.authority, localItem, null);
+//   });
 
 const defaultFooterDom = (
   <DefaultFooter
@@ -82,18 +82,19 @@ const BasicLayout = (props) => {
     }
   }; // get children authority
 
-  const authorized = useMemo(
-    () =>
-      getMatchMenu(location.pathname || '/', menuDataRef.current).pop() || {
-        authority: undefined,
-      },
-    [location.pathname],
-  );
+  // const authorized = useMemo(
+  //   () =>
+  //     getMatchMenu(location.pathname || '/', menuDataRef.current).pop() || {
+  //       authority: undefined,
+  //     },
+  //   [location.pathname],
+  // );
   const { formatMessage } = useIntl();
   return (
     <ProLayout
       logo={logo}
-      formatMessage={formatMessage}
+      // formatMessage={formatMessage}
+      title="eIoT System"
       {...props}
       onCollapse={handleMenuCollapse}
       onMenuHeaderClick={() => history.push('/')}
@@ -111,9 +112,7 @@ const BasicLayout = (props) => {
       breadcrumbRender={(routers = []) => [
         {
           path: '/',
-          breadcrumbName: formatMessage({
-            id: 'menu.home',
-          }),
+          breadcrumbName: "首页",
         },
         ...routers,
       ]}
@@ -128,16 +127,16 @@ const BasicLayout = (props) => {
       footerRender={() => {
           return defaultFooterDom;
       }}
-      menuDataRender={menuDataRender}
+      // menuDataRender={menuDataRender}
       rightContentRender={() => <RightContent />}
       postMenuData={(menuData) => {
         menuDataRef.current = menuData || [];
         return menuData || [];
       }}
     >
-      <Authorized authority={authorized.authority} noMatch={noMatch}>
+      {/* <Authorized authority={authorized.authority} noMatch={noMatch}> */}
         {children}
-      </Authorized>
+      {/* </Authorized> */}
     </ProLayout>
   );
 };

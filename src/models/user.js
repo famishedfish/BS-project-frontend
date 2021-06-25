@@ -7,7 +7,6 @@ const UserModel = {
   },
   effects: {
     *register({ payload }, { call, put }) {
-      console.log(payload)
       const response = yield call(registerUser, payload);
 
       if (response.status === 'ok') {

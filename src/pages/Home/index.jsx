@@ -1,74 +1,37 @@
-import React from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
-import styles from './index.less';
+import React, { Component } from 'react'
+import { connect } from 'umi';
+import IntroduceRow from './components/IntroduceRow';
+import DeviceOverview from './components/DeviceOverview';
+import RecordOverview from './components/RecordOverview';
 
-const CodePreview = ({ children }) => (
-  <pre className={styles.pre}>
-    <code>
-      <Typography.Text copyable>{children}</Typography.Text>
-    </code>
-  </pre>
-);
+class Home extends Component {
+  state = {
+    salesType: '全部',
+  };
 
-export default () => {
-  const intl = useIntl();
-  return (
-    // <PageContainer header={{
-    //     title: '首页',
-    //     ghost: true,
-    //     breadcrumb: {
-    //       routes: [
-    //         {
-    //           path: '',
-    //           breadcrumbName: '统计信息',
-    //         },
-    //       ],
-    //     },
-    //   }}>
-      <Card>
-        {/* <Alert
-          message={intl.formatMessage({
-            id: 'pages.welcome.alertMessage',
-            defaultMessage: 'Faster and stronger heavy-duty components have been released.',
-          })}
-          type="success"
-          showIcon
-          banner
-          style={{
-            margin: -12,
-            marginBottom: 24,
-          }}
-        /> */}
-        <Typography.Text strong>
-          <FormattedMessage id="pages.welcome.advancedComponent" defaultMessage="Advanced Form" />{' '}
-          <a
-            href="https://procomponents.ant.design/components/table"
-            rel="noopener noreferrer"
-            target="__blank"
-          >
-            <FormattedMessage id="pages.welcome.link" defaultMessage="Welcome" />
-          </a>
-        </Typography.Text>
-        <CodePreview>yarn add @ant-design/pro-table</CodePreview>
-        <Typography.Text
-          strong
-          style={{
-            marginBottom: 12,
-          }}
-        >
-          <FormattedMessage id="pages.welcome.advancedLayout" defaultMessage="Advanced layout" />{' '}
-          <a
-            href="https://procomponents.ant.design/components/layout"
-            rel="noopener noreferrer"
-            target="__blank"
-          >
-            <FormattedMessage id="pages.welcome.link" defaultMessage="Welcome" />
-          </a>
-        </Typography.Text>
-        <CodePreview>yarn add @ant-design/pro-layout</CodePreview>
-      </Card>
-    // </PageContainer>
-  );
-};
+  handleChangeSalesType = (e) => {
+    this.setState({
+      salesType: e.target.value,
+    });
+  };
+
+  render() {
+    const { salesType } = this.state
+
+    return (
+      <div>
+        <IntroduceRow></IntroduceRow>
+        <DeviceOverview></DeviceOverview>
+        <RecordOverview
+          salesType = {salesType}
+          handleChangeSalesType={this.handleChangeSalesType}
+        ></RecordOverview>
+      </div>
+    )
+  }
+}
+
+export default connect(({ login, loading }) => ({
+  userLogin: login,
+  loading: loading.effects['login/login'], // login effect是否正在运行
+}))(Home);
