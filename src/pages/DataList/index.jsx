@@ -6,6 +6,7 @@ import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import ProDescriptions from '@ant-design/pro-descriptions';
+import moment from 'moment';
 import UpdateForm from './components/UpdateForm';
 import { queryRule, updateRule, addRule, removeRule } from './service';
 /**
@@ -60,39 +61,12 @@ const handleUpdate = async (fields) => {
  * @param selectedRows
  */
 
-const handleRemove = async (selectedRows) => {
-    const hide = message.loading('Deleting');
-    if (!selectedRows) return true;
-
-    try {
-        await removeRule({
-            key: selectedRows.map((row) => row.key),
-        });
-        hide();
-        message.success('Deleted successfully and will refresh soon');
-        return true;
-    } catch (error) {
-        hide();
-        message.error('Delete failed, please try again');
-        return false;
-    }
-};
 
 const DataList = (props) => {
-    /**
-     * @en-US Pop-up window of new window
-     * @zh-CN 新建窗口的弹窗
-     *  */
-    /**
-     * @en-US The pop-up window of the distribution update window
-     * @zh-CN 分布更新窗口的弹窗
-     * */
-
     const [updateModalVisible, handleUpdateModalVisible] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const actionRef = useRef();
     const [currentRow, setCurrentRow] = useState();
-    const [selectedRowsState, setSelectedRows] = useState([]);
     /**
      * @en-US International configuration
      * @zh-CN 国际化配置
@@ -119,6 +93,7 @@ const DataList = (props) => {
         // },
         {
             title: '数值',
+            search: false,
             dataIndex: 'value',
             sorter: true,
             hideInForm: true,
@@ -140,65 +115,119 @@ const DataList = (props) => {
         // },
         {
             title: '状态',
-            dataIndex: 'status',
-            hideInForm: true,
+            valueType: 'select',
+            dataIndex: 'alert',
+            search: false,
+            filters: true,
             valueEnum: {
                 0: {
                     text: '正常',
-                    status: 'Default',
+                    status: 'Success',
                 },
                 1: {
                     text: '告警',
-                    status: 'Processing',
+                    status: 'Error',
                 },
             },
         },
         {
             title: '上报时间',
-            dataIndex: 'updatedAt',
+            dataIndex: 'timestamp',
             sorter: true,
             valueType: 'date',
             hideInForm: true,
         },
         {
-            title: '位置',
-            dataIndex: 'position',
+            title: '经度',
+            search: false,
+            dataIndex: 'lat',
             valueType: 'textarea',
-            renderText: (lat, lng) => `(${lat}, ${lng} )`,
+            renderText: (value) => value.toFixed(2),
+        },
+        {
+            title: '纬度',
+            search: false,
+            dataIndex: 'lng',
+            valueType: 'textarea',
+            renderText: (value) => value.toFixed(2),
         },
         {
             title: '消息',
+            search: false,
             dataIndex: 'info',
             valueType: 'textarea',
         },
     ];
 
-    const { dispatch, records } = props;
+    const { dispatch, records, loading } = props;
 
-    const tableQuery = async (params, sorter, filter) => {
+    const tableQuery = (params, sorter, filter) => {
+        let data = records.slice()
+        const searchKeys = Object.keys(params).slice(2)
+
+        searchKeys.forEach((key) => {
+            const searchVal = params[key]
+            data = data.filter((item) => {
+                if (key === 'clientId') return item[key].indexOf(searchVal) !== -1
+                else {
+                    return moment(item[key]).format('YYYY-MM-DD') === searchVal
+                }
+            });
+        })
+
+        if (sorter) {
+            data = data.sort((prev, next) => {
+                let sortNumber = 0;
+                Object.keys(sorter).forEach((key) => {
+                    if (sorter[key] === 'descend') {
+                        if (prev[key] - next[key] > 0) {
+                            sortNumber += -1;
+                        } else {
+                            sortNumber += 1;
+                        }
+                        return;
+                    } else if (sorter[key] === 'ascend') {
+                        if (prev[key] - next[key] > 0) {
+                            sortNumber += 1;
+                        } else {
+                            sortNumber += -1;
+                        }
+                        return;
+                    }
+                });
+                return sortNumber;
+            });
+        }
+
+        if(filter) {
+            if (Object.keys(filter).length > 0) {
+                data = data.filter((item) => {
+                  return Object.keys(filter).some((key) => {
+                    if (!filter[key]) return true;
+                    if (filter[key].includes(`${item[key]}`)) return true;
+                    return false;
+                  });
+                });
+              }
+        }
+
         const result = {
-            data: records,
-            // total: tableListDataSource.length,
+            data: data,
             success: true,
-            // pageSize,
-            // current: parseInt(`${params.currentPage}`, 10) || 1,
-          };
-          return result;
+        };
+        return result;
     }
 
-
-
-
-      useEffect(() => {
+    useEffect(() => {
         if (dispatch) {
-          dispatch({
-            type: 'record/fetch',
-          });
+            dispatch({
+                type: 'record/fetch',
+            });
         }
-      }, []);
+    }, []);
 
     return (
-        <PageContainer>
+        <PageContainer loading={loading}>
             <ProTable
                 headerTitle="查询表格"
                 actionRef={actionRef}
@@ -207,55 +236,10 @@ const DataList = (props) => {
                     labelWidth: 120,
                 }}
                 request={tableQuery}
-                // request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
                 columns={columns}
+                // beforeSearchSubmit={handleSearch}
             />
-            {selectedRowsState?.length > 0 && (
-                <FooterToolbar
-                    extra={
-                        <div>
-                            <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-                            <a
-                                style={{
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {selectedRowsState.length}
-                            </a>{' '}
-                            <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-                            &nbsp;&nbsp;
-                            <span>
-                                <FormattedMessage
-                                    id="pages.searchTable.totalServiceCalls"
-                                    defaultMessage="Total number of service calls"
-                                />{' '}
-                                {selectedRowsState.reduce((pre, item) => pre + item.callNo, 0)}{' '}
-                                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-                            </span>
-                        </div>
-                    }
-                >
-                    <Button
-                        onClick={async () => {
-                            await handleRemove(selectedRowsState);
-                            setSelectedRows([]);
-                            actionRef.current?.reloadAndRest?.();
-                        }}
-                    >
-                        <FormattedMessage
-                            id="pages.searchTable.batchDeletion"
-                            defaultMessage="Batch deletion"
-                        />
-                    </Button>
-                    <Button type="primary">
-                        <FormattedMessage
-                            id="pages.searchTable.batchApproval"
-                            defaultMessage="Batch approval"
-                        />
-                    </Button>
-                </FooterToolbar>
-            )}
-            <UpdateForm
+            {/* <UpdateForm
                 onSubmit={async (value) => {
                     const success = await handleUpdate(value);
 
@@ -274,9 +258,9 @@ const DataList = (props) => {
                 }}
                 updateModalVisible={updateModalVisible}
                 values={currentRow || {}}
-            />
+            /> */}
 
-            <Drawer
+            {/* <Drawer
                 width={600}
                 visible={showDetail}
                 onClose={() => {
@@ -298,12 +282,14 @@ const DataList = (props) => {
                         columns={columns}
                     />
                 )}
-            </Drawer>
+            </Drawer> */}
         </PageContainer>
     );
 };
 
 // export default DataList;
-export default connect(({ record }) => ({
+export default connect(({ record, loading }) => ({
     records: record.records,
-  }))(DataList);
+    loading: loading.effects['record/fetch'], // login effect是否正在运行
+    // loading: loading.models.record
+}))(DataList);

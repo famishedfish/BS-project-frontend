@@ -102,6 +102,7 @@ function getRule(req, res, u) {
 }
 
 function postRule(req, res, u, b) {
+  debugger
   let realUrl = u;
 
   if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
@@ -172,6 +173,6 @@ function postRule(req, res, u, b) {
 }
 
 export default {
-  'GET /api/rule': getRule,
+  // 'GET /api/rule': getRule,
   'POST /api/rule': postRule,
 };
