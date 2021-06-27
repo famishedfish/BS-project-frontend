@@ -13,7 +13,7 @@ export default class DeviceOverview extends Component {
         for (let i = 0; i < 20; i += 1) {
             visitData.push({
                 x: moment(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format('YYYY-MM-DD'),
-                y: Math.floor(Math.random() * 100) + 10,
+                y: Math.floor(Math.random() * 10) + 2,
             });
         }
 
@@ -41,9 +41,9 @@ export default class DeviceOverview extends Component {
                                 }}>
                                 <ChartCard
                                     title="在线率"
-                                    total="88%"
+                                    total="13%"
                                     contentHeight={46}>
-                                    <MiniProgress percent={88} strokeWidth={8} target={80} />
+                                    <MiniProgress percent={13} strokeWidth={8} target={15} />
                                 </ChartCard>
                             </Col>
                             <Col
@@ -54,7 +54,7 @@ export default class DeviceOverview extends Component {
                                 }}>
                                 <ChartCard
                                     title="近10日新增"
-                                    total={<Statistic value={112893} />}
+                                    total={<Statistic value={155} />}
                                     contentHeight={46}>
                                     <MiniArea height={45} line={true} data={visitData} />
                                 </ChartCard>

@@ -4,6 +4,7 @@ const UserModel = {
   namespace: 'user',
   state: {
     currentUser: {},
+    subDevices: [], // 用户订阅的设备
   },
   effects: {
     *register({ payload }, { call, put }) {
@@ -42,6 +43,7 @@ const UserModel = {
       return {  // TODO 完善头像
         ...state, 
         currentUser: {...action.payload, avatar:'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'},
+        // subDevices: 
       }
     },
 

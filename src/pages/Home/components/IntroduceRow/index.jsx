@@ -16,7 +16,7 @@ export default class IntroduceRow extends Component {
                             padding: '0px 24px 8px 24px',
                             fontSize: '35px',
                         }}>
-                        <Statistic prefix={<SettingTwoTone />} title="Total Devices" value={112893} />
+                        <Statistic prefix={<SettingTwoTone />} title="Total Devices" value={2893} />
                     </Card>
                 </Col>
                 <Col span={8}>
@@ -28,7 +28,7 @@ export default class IntroduceRow extends Component {
                             padding: '0px 24px 8px 24px',
                             fontSize: '35px',
                         }}>
-                        <Statistic prefix={<CloudTwoTone />} title="Online Devices" value={11} />
+                        <Statistic prefix={<CloudTwoTone />} title="Online Devices" value={378} />
                     </Card>
                 </Col>
                 <Col span={8}>
@@ -40,7 +40,7 @@ export default class IntroduceRow extends Component {
                             padding: '0px 24px 8px 24px',
                             fontSize: '35px',
                         }}>
-                        <Statistic prefix={<StarTwoTone />} title="Total records" value={11293849} />
+                        <Statistic prefix={<StarTwoTone />} title="Total records" value={11293} />
                     </Card>
                 </Col>
             </Row>

@@ -1,24 +1,19 @@
 import request from '@/utils/request';
-export async function queryRule(params) {
-  return request('/api/rule', {
-    params,
-  });
-}
-export async function removeRule(params) {
-  return request('/api/rule', {
+export async function removeDevice(params) {
+  return request('/api/devices/remove', {
     method: 'POST',
-    data: { ...params, method: 'delete' },
+    data: { ...params },
   });
 }
-export async function addRule(params) {
-  return request('/api/rule', {
+export async function addDevice(params) {
+  return request('/api/devices/add', {
     method: 'POST',
     data: { ...params, method: 'post' },
   });
 }
-export async function updateRule(params) {
-  return request('/api/rule', {
+export async function updateDevice(params) {
+  return request('/api/devices/update', {
     method: 'POST',
-    data: { ...params, method: 'update' },
+    data: { ...params },
   });
 }

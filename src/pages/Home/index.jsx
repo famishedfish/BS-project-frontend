@@ -31,7 +31,10 @@ class Home extends Component {
   }
 }
 
-export default connect(({ login, loading }) => ({
-  userLogin: login,
-  loading: loading.effects['login/login'], // login effect是否正在运行
+export default connect(({ device, loading }) => ({
+  total: device.total,
+  online: device.online,
+  devices: device.devices,
+  loading: loading.models.device,
+  // loading: loading.effects['login/login'], // login effect是否正在运行
 }))(Home);

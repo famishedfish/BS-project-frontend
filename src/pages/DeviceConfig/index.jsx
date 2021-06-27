@@ -1,249 +1,246 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
-import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { Button, message, Divider, Modal } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'umi';
+import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
-import ProDescriptions from '@ant-design/pro-descriptions';
-import UpdateForm from './components/UpdateForm';
-import { queryRule, updateRule, addRule, removeRule } from './service';
-/**
- * @en-US Add node
- * @zh-CN 添加节点
- * @param fields
- */
+import { ModalForm, ProFormText, ProFormSelect } from '@ant-design/pro-form';
+import { updateDevice, addDevice, removeDevice } from './service';
 
-const handleAdd = async (fields) => {
-  const hide = message.loading('Adding');
+
+const handleAdd = async (fields, currentUser) => {
+  const hide = message.loading('正在添加');
 
   try {
-    await addRule({ ...fields });
-    hide();
-    message.success('Added successfully');
-    return true;
+    // 检查clientId是否存在
+    const itemId = "device" + fields.clientId;
+    if (currentUser.devices.indexOf(itemId) !== -1) {
+      hide();
+      message.error('设备已存在，添加失败!');
+      return false;
+    } else {
+      await addDevice({ ...fields, userName: currentUser.name });
+      hide();
+      message.success('🎉 🎉 🎉 添加成功');
+      return true;
+    }
   } catch (error) {
     hide();
-    message.error('Adding failed, please try again!');
-    return false;
-  }
-};
-/**
- * @en-US Update node
- * @zh-CN 更新节点
- *
- * @param fields
- */
-
-const handleUpdate = async (fields) => {
-  const hide = message.loading('Configuring');
-
-  try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
-    hide();
-    message.success('Configuration is successful');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Configuration failed, please try again!');
-    return false;
-  }
-};
-/**
- *  Delete node
- * @zh-CN 删除节点
- *
- * @param selectedRows
- */
-
-const handleRemove = async (selectedRows) => {
-  const hide = message.loading('Deleting');
-  if (!selectedRows) return true;
-
-  try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
-    hide();
-    message.success('Deleted successfully and will refresh soon');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Delete failed, please try again');
+    message.error('添加失败，请稍后重试!');
     return false;
   }
 };
 
-const TableList = () => {
-  /**
-   * @en-US Pop-up window of new window
-   * @zh-CN 新建窗口的弹窗
-   *  */
+const handleUpdate = async (fields, stepFormValues) => {
+  const hide = message.loading('正在更新');
+
+  try {
+    await updateDevice({ clientId: stepFormValues.clientId, ...fields });
+    hide();
+    message.success('🎉 🎉 🎉 更新成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('更新失败，请稍后重试!');
+    return false;
+  }
+};
+
+
+const TableList = (props) => {
+  const { dispatch, currentUser, devices, loading, updating } = props;
+  // 新建窗口弹窗
   const [createModalVisible, handleModalVisible] = useState(false);
-  /**
-   * @en-US The pop-up window of the distribution update window
-   * @zh-CN 分布更新窗口的弹窗
-   * */
-
+  // 更新窗口弹窗
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
-  const [showDetail, setShowDetail] = useState(false);
-  const actionRef = useRef();
-  const [currentRow, setCurrentRow] = useState();
-  const [selectedRowsState, setSelectedRows] = useState([]);
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-
-  const intl = useIntl();
+  const [stepFormValues, setStepFormValues] = useState({});
   const columns = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.updateForm.ruleName.nameLabel"
-          defaultMessage="Rule name"
-        />
-      ),
-      dataIndex: 'name',
-      tip: 'The rule name is the unique key',
-      render: (dom, entity) => {
+      title: '设备ID',
+      dataIndex: 'clientId',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: '设备ID为必填项',
+          },
+          {
+            pattern: /\d{4}$/,
+            message: '设备ID为4位数字',
+          },
+        ],
+      },
+      render: (dom, _) => {
         return (
           <a
             onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
+              alert('显示设备相关信息')
+            }}>
             {dom}
           </a>
         );
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-      dataIndex: 'desc',
+      title: '设备名',
+      dataIndex: 'deviceName',
       valueType: 'textarea',
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleCallNo"
-          defaultMessage="Number of service calls"
-        />
-      ),
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val) =>
-        `${val}${intl.formatMessage({
-          id: 'pages.searchTable.tenThousand',
-          defaultMessage: ' 万 ',
-        })}`,
-    },
-    {
-      title: <FormattedMessage id="pages.searchTable.titleStatus" defaultMessage="Status" />,
-      dataIndex: 'status',
-      hideInForm: true,
+      title: '类型',
+      valueType: 'select',
+      dataIndex: 'deviceType',
+      search: false,
+      filters: true,
       valueEnum: {
-        0: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.default"
-              defaultMessage="Shut down"
-            />
-          ),
-          status: 'Default',
-        },
-        1: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
-          ),
-          status: 'Processing',
-        },
-        2: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-          ),
-          status: 'Success',
-        },
-        3: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.abnormal"
-              defaultMessage="Abnormal"
-            />
-          ),
-          status: 'Error',
-        },
+        0: { text: '空调' },
+        1: { text: '冰箱' },
+        2: { text: '电视' },
+        3: { text: '热水器' },
+        4: { text: '扫地机器人' },
+        5: { text: '其他' },
       },
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleUpdatedAt"
-          defaultMessage="Last scheduled time"
-        />
-      ),
+      title: '激活时间',
+      dataIndex: 'timestamp',
       sorter: true,
-      dataIndex: 'updatedAt',
+      search: false,
       valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-
-        if (`${status}` === '0') {
-          return false;
-        }
-
-        if (`${status}` === '3') {
-          return (
-            <Input
-              {...rest}
-              placeholder={intl.formatMessage({
-                id: 'pages.searchTable.exception',
-                defaultMessage: 'Please enter the reason for the exception!',
-              })}
-            />
-          );
-        }
-
-        return defaultRender(item);
-      },
+      hideInForm: true,
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
+      title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
         <a
-          key="config"
           onClick={() => {
             handleUpdateModalVisible(true);
-            setCurrentRow(record);
-          }}
-        >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
+            setStepFormValues(record);
+          }}>
+          配置
         </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.searchTable.subscribeAlert"
-            defaultMessage="Subscribe to alerts"
-          />
+        <Divider type="vertical" />,
+        <a
+          style={{ color: 'red' }}
+          onClick={() => {
+            handleRemove(record, currentUser);
+          }}>
+          删除
         </a>,
       ],
     },
   ];
+
+  const handleRemove = (params, currentUser) => {
+    Modal.confirm({
+      title: '确认删除这台设备吗？',
+      content: `设备ID: ${params.clientId}`,
+      okText: '确认',
+      okType: 'danger',
+      cancelText: '取消',
+      async onOk() {  // 确认
+        const hide = message.loading('正在删除');
+        try {
+          await removeDevice({ clientId: params.clientId, userName: currentUser.name });
+          dispatch({
+            type: 'device/fetch',
+          });
+          dispatch({
+            type: 'login/update',
+            payload: { password: currentUser.password, name: currentUser.name },
+          });
+          hide();
+          message.success('删除成功');
+        } catch (error) {
+          hide();
+          message.error('删除失败，请稍后重试!');
+        }
+      },
+  
+    });
+  };
+
+  const tableQuery = (params, sorter, filter) => {
+
+    while (updating) { }
+    let data = devices.slice()  // original data
+
+    // display subscribed device only
+    const deviceList = currentUser.devices
+    data = data.filter((item) => {
+      return deviceList.indexOf(item.clientId) !== -1
+    });
+
+    const searchKeys = Object.keys(params).slice(2)
+    searchKeys.forEach((key) => {
+      const searchVal = params[key]
+      data = data.filter((item) => {
+        if (!item[key]) return false  // filter for empty item
+        return item[key].indexOf(searchVal) !== -1
+      });
+    })
+
+    if (sorter) {
+      data = data.sort((prev, next) => {
+        let sortNumber = 0;
+        Object.keys(sorter).forEach((key) => {
+          if (sorter[key] === 'descend') {
+            if (prev[key] - next[key] > 0) {
+              sortNumber += -1;
+            } else {
+              sortNumber += 1;
+            }
+            return;
+          } else if (sorter[key] === 'ascend') {
+            if (prev[key] - next[key] > 0) {
+              sortNumber += 1;
+            } else {
+              sortNumber += -1;
+            }
+            return;
+          }
+        });
+        return sortNumber;
+      });
+    }
+
+    if (filter) {
+      if (Object.keys(filter).length > 0) {
+        data = data.filter((item) => {
+          return Object.keys(filter).some((key) => {
+            if (!filter[key]) return true;
+            if (filter[key].includes(`${item[key]}`)) return true;
+            return false;
+          });
+        });
+      }
+    }
+
+    const result = {
+      data: data,
+      success: true,
+    };
+    return result;
+  }
+
+  useEffect(() => {
+    if (dispatch) {
+      dispatch({
+        type: 'device/fetch',
+      });
+      dispatch({
+        type: 'login/update',
+        payload: { password: currentUser.password, name: currentUser.name },
+      });
+    }
+  }, []);
+
   return (
-    <PageContainer>
+    <PageContainer loading={loading || updating}>
       <ProTable
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
-        actionRef={actionRef}
+        headerTitle="查询表格"
         rowKey="key"
         search={{
           labelWidth: 120,
@@ -256,145 +253,119 @@ const TableList = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined /> 添加设备
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
+        request={tableQuery}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a
-                style={{
-                  fontWeight: 600,
-                }}
-              >
-                {selectedRowsState.length}
-              </a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-              &nbsp;&nbsp;
-              <span>
-                <FormattedMessage
-                  id="pages.searchTable.totalServiceCalls"
-                  defaultMessage="Total number of service calls"
-                />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
+        title="添加设备"
         width="400px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value);
+          const success = await handleAdd(value, currentUser);
 
           if (success) {
             handleModalVisible(false);
-
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
+            dispatch({
+              type: 'login/update',
+              payload: { password: currentUser.password, name: currentUser.name },
+            });
+            dispatch({
+              type: 'device/fetch',
+            });
           }
         }}
       >
+
         <ProFormText
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
+              message: "请输入设备ID",
+            },
+            {
+              pattern: /(^\d{4}$)/,
+              message: "设备ID需为4位数字",
             },
           ]}
+          label="设备ID"
+          placeholder="输入4位数，如0001"
           width="md"
-          name="name"
+          name="clientId"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormText
+          label="设备名"
+          placeholder="可选项"
+          width="md"
+          name="deviceName"
+        />
+        <ProFormSelect
+          width="sm"
+          options={[
+            { value: 0, label: '空调' },
+            { value: 1, label: '冰箱' },
+            { value: 2, label: '电视' },
+            { value: 3, label: '热水器' },
+            { value: 4, label: '扫地机器人' },
+            { value: 5, label: '其他' },
+          ]}
+          name="deviceType"
+          label="设备类型"
+          placeholder="选择设备类型"
+        />
       </ModalForm>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value);
+      <ModalForm
+        title="配置设备"
+        width="400px"
+        visible={updateModalVisible}
+        onVisibleChange={handleUpdateModalVisible}
+        onFinish={async (value) => {
+          const success = await handleUpdate(value, stepFormValues);
 
           if (success) {
             handleUpdateModalVisible(false);
-            setCurrentRow(undefined);
-
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
+            dispatch({
+              type: 'login/update',
+              payload: { password: currentUser.password, name: currentUser.name },
+            });
+            dispatch({
+              type: 'device/fetch',
+            });
           }
         }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          setCurrentRow(undefined);
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
-
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
       >
-        {currentRow?.name && (
-          <ProDescriptions
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns}
-          />
-        )}
-      </Drawer>
+        <ProFormText
+          label="设备名"
+          placeholder="可选项"
+          width="md"
+          name="deviceName"
+        />
+        <ProFormSelect
+          width="sm"
+          options={[
+            { value: 0, label: '空调' },
+            { value: 1, label: '冰箱' },
+            { value: 2, label: '电视' },
+            { value: 3, label: '热水器' },
+            { value: 4, label: '扫地机器人' },
+            { value: 5, label: '其他' },
+          ]}
+          name="deviceType"
+          label="设备类型"
+          placeholder="选择设备类型"
+        />
+      </ModalForm>
     </PageContainer>
   );
 };
 
-export default TableList;
+export default connect(({ user, device, loading }) => ({
+  currentUser: user.currentUser,
+  devices: device.devices,
+  loading: loading.models.device,
+  // updating: loading.models.login
+  updating: loading.effects['login/update']
+}))(TableList);

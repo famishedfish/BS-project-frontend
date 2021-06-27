@@ -4,10 +4,10 @@ import {
   MobileOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Alert, Space, message, Tabs } from 'antd';
+import { Alert, Tabs } from 'antd';
 import React, { useState } from 'react';
-import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { useIntl, connect, FormattedMessage } from 'umi';
+import ProForm, { ProFormText } from '@ant-design/pro-form';
+import { connect } from 'umi';
 import styles from './index.less';
 
 const LoginMessage = ({ content }) => (
@@ -25,7 +25,6 @@ const Login = (props) => {
   const { userLogin = {}, submitting } = props;
   const { status } = userLogin;
   const [type, setType] = useState('account');  // type = ['account', 'register']
-  const intl = useIntl();
 
   const handleSubmit = (values) => {
     const { dispatch } = props;
@@ -66,27 +65,18 @@ const Login = (props) => {
         <Tabs activeKey={type} onChange={setType}>  {/* 账号密码登录&注册 */}
           <Tabs.TabPane
             key="account"
-            tab={intl.formatMessage({
-              id: 'pages.login.accountLogin.tab',
-              defaultMessage: 'Account password login',
-            })}
+            tab='账号密码登陆'
           />
           <Tabs.TabPane
             key="register"
-            tab={intl.formatMessage({
-              id: 'pages.login.registerAccount',
-              defaultMessage: 'Register New Account',
-            })}
+            tab='注册新用户'
           />
         </Tabs>
 
         {/* 账号密码错误 */}
         {status === 'error' && type === 'account' && !submitting && (
           <LoginMessage
-            content={intl.formatMessage({
-              id: 'pages.login.accountLogin.errorMessage',
-              defaultMessage: 'Incorrect account or password',
-            })}
+            content="账号或密码错误"
           />
         )}
         {type === 'account' && (
@@ -97,19 +87,11 @@ const Login = (props) => {
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.username.placeholder',
-                defaultMessage: 'Username: admin or user',
-              })}
+              placeholder='用户名'
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="Please enter user name!"
-                    />
-                  ),
+                  message: "请输入用户名！",
                 },
               ]}
             />
@@ -119,19 +101,11 @@ const Login = (props) => {
                 size: 'large',
                 prefix: <LockOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.password.placeholder',
-                defaultMessage: 'Please enter password',
-              })}
+              placeholder="密码"
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.password.required"
-                      defaultMessage="Please enter password！"
-                    />
-                  ),
+                  message: "请输入密码！",
                 },
               ]}
             />
@@ -168,12 +142,7 @@ const Login = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.password.required"
-                      defaultMessage="Please enter password！"
-                    />
-                  ),
+                  message: "请输入密码",
                 },
                 {
                   pattern: /(?=.*\d)(?=.*[a-zA-Z])/,
@@ -191,21 +160,11 @@ const Login = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.phoneNumber.required"
-                      defaultMessage="Please enter phone number!"
-                    />
-                  ),
+                  message: '请输入手机号！',
                 },
                 {
                   pattern: /^1\d{10}$/,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.phoneNumber.invalid"
-                      defaultMessage="Malformed phone number!"
-                    />
-                  ),
+                  message: '请输入合法的手机号！',
                 },
               ]}
             />
@@ -222,12 +181,7 @@ const Login = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.email.required"
-                      defaultMessage="Please enter verification code！"
-                    />
-                  ),
+                  message: "请输入邮箱地址！",
                 },
                 {
                   pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
@@ -237,22 +191,6 @@ const Login = (props) => {
             />
           </>
         )}
-        {/* <div
-          style={{
-            marginBottom: 24,
-          }}
-        >
-          <ProFormCheckbox noStyle name="autoLogin">
-            <FormattedMessage id="pages.login.rememberMe" defaultMessage="Auto login" />
-          </ProFormCheckbox>
-          <a
-            style={{
-              float: 'right',
-            }}
-          >
-            <FormattedMessage id="pages.login.forgotPassword" defaultMessage="Forget password" />
-          </a>
-        </div> */}
       </ProForm>
     </div>
   );

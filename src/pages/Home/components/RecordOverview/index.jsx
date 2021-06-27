@@ -7,8 +7,8 @@ export default class RecordOverview extends Component {
         const salesData = [];
         for (let i = 0; i < 30; i += 1) {
             salesData.push({
-                x: `${i + 1}月`,
-                y: Math.floor(Math.random() * 1000) + 200,
+                x: `${i + 1}日`,
+                y: Math.floor(Math.random() * 100) + 20,
             });
         }
 
@@ -32,10 +32,13 @@ export default class RecordOverview extends Component {
                             <div>   {/* 修改成遍历的形式 */}
                                 <Radio.Group value={salesType} onChange={handleChangeSalesType}>
                                     <Radio.Button value="全部">
-                                        全部
+                                        冰箱
                                     </Radio.Button>
                                     <Radio.Button value="online">
-                                        线上
+                                        电视
+                                    </Radio.Button>
+                                    <Radio.Button value="other">
+                                        扫地机器人
                                     </Radio.Button>
                                     <Radio.Button value="other">
                                         其他

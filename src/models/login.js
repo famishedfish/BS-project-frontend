@@ -50,6 +50,14 @@ const Model = {
       }
     },
 
+    *update({ payload }, { call, put }) {
+      const response = yield call(accountLogin, payload);
+      yield put({
+        type: 'user/saveCurrentUser',
+        payload: response.currentUser,
+      })
+    },
+
     logout() {
       const { redirect } = getPageQuery(); // Note: There may be security issues, please note
 
