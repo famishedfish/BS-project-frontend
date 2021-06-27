@@ -12,7 +12,7 @@ export default class RecordOverview extends Component {
             });
         }
 
-        const { salesType, handleChangeSalesType } = this.props
+        const { salesType, handleChangeSalesType, loading } = this.props
 
         return (
             <Row
@@ -22,7 +22,7 @@ export default class RecordOverview extends Component {
                 }}>
                 <Col xl={24} lg={24} md={24} sm={24} xs={24}>
                     <Card
-                        // loading={loading}
+                        loading={loading}
                         bordered={false}
                         title="分类查看数据"
                         style={{
@@ -31,16 +31,22 @@ export default class RecordOverview extends Component {
                         extra={
                             <div>   {/* 修改成遍历的形式 */}
                                 <Radio.Group value={salesType} onChange={handleChangeSalesType}>
-                                    <Radio.Button value="全部">
+                                    <Radio.Button value={0}>
+                                        空调
+                                    </Radio.Button>
+                                    <Radio.Button value={1}>
                                         冰箱
                                     </Radio.Button>
-                                    <Radio.Button value="online">
+                                    <Radio.Button value={2}>
                                         电视
                                     </Radio.Button>
-                                    <Radio.Button value="other">
+                                    <Radio.Button value={3}>
+                                        热水器
+                                    </Radio.Button>
+                                    <Radio.Button value={4}>
                                         扫地机器人
                                     </Radio.Button>
-                                    <Radio.Button value="other">
+                                    <Radio.Button value={5}>
                                         其他
                                     </Radio.Button>
                                 </Radio.Group>

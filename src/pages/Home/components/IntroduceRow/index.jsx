@@ -5,42 +5,43 @@ import { CloudTwoTone, SettingTwoTone, StarTwoTone }from '@ant-design/icons';
 export default class IntroduceRow extends Component {
 
     render() {
+        const {total, online, loadingDev, loadingRec, recNum } = this.props
         return (
             <Row gutter={24}>
                 <Col span={8}>
                     <Card
-                        // loading={loading}
+                        loading={loadingDev || loadingRec}
                         bordered={false}
                         title='总设备数'
                         bodyStyle={{
                             padding: '0px 24px 8px 24px',
                             fontSize: '35px',
                         }}>
-                        <Statistic prefix={<SettingTwoTone />} title="Total Devices" value={2893} />
+                        <Statistic prefix={<SettingTwoTone />} title="Total Devices" value={total} />
                     </Card>
                 </Col>
                 <Col span={8}>
                     <Card
-                        // loading={loading}
+                        loading={loadingDev || loadingRec}
                         bordered={false}
                         title='在线设备数'
                         bodyStyle={{
                             padding: '0px 24px 8px 24px',
                             fontSize: '35px',
                         }}>
-                        <Statistic prefix={<CloudTwoTone />} title="Online Devices" value={378} />
+                        <Statistic prefix={<CloudTwoTone />} title="Online Devices" value={online} />
                     </Card>
                 </Col>
                 <Col span={8}>
                     <Card
-                        // loading={loading}
+                        loading={loadingRec || loadingDev}
                         bordered={false}
                         title='总数据量'
                         bodyStyle={{
                             padding: '0px 24px 8px 24px',
                             fontSize: '35px',
                         }}>
-                        <Statistic prefix={<StarTwoTone />} title="Total records" value={11293} />
+                        <Statistic prefix={<StarTwoTone />} title="Total records" value={recNum} />
                     </Card>
                 </Col>
             </Row>

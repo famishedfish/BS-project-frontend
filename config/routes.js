@@ -44,7 +44,7 @@ export default [
                 name: '数据地图',
                 icon: 'global',
                 path: '/map',
-                component: './Admin',
+                component: './Map',
               },
               {
                 name: '设备配置',
