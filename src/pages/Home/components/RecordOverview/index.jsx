@@ -1,14 +1,18 @@
 import React, { Component } from 'react'
-import { Statistic, Radio, Card, Col, Row } from 'antd';
+import { Radio, Card, Col, Row } from 'antd';
 import { Bar } from 'ant-design-pro/lib/Charts';
+
 
 export default class RecordOverview extends Component {
     render() {
         const salesData = [];
+        const endDay = new Date().getTime();
+        const beginDay = endDay - 86400000 * 29
         for (let i = 0; i < 30; i += 1) {
+            const date = new Date(beginDay + 86400000 * i)
             salesData.push({
-                x: `${i + 1}日`,
-                y: Math.floor(Math.random() * 100) + 20,
+                x: `${date.getDate()}日`,
+                y: Math.floor(Math.random() * 30) + 2,
             });
         }
 
@@ -18,7 +22,7 @@ export default class RecordOverview extends Component {
             <Row
                 gutter={24}
                 style={{
-                    marginTop: 24,  // 距离上一个component的距离
+                    marginTop: 24,
                 }}>
                 <Col xl={24} lg={24} md={24} sm={24} xs={24}>
                     <Card

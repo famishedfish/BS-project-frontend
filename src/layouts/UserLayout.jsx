@@ -3,7 +3,7 @@ import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link, SelectLang, useIntl, connect, FormattedMessage } from 'umi';
 import { GithubOutlined } from '@ant-design/icons';
 import React from 'react';
-import logo from '../assets/logo.svg';
+import logo from '../assets/wifi.svg';
 import styles from './UserLayout.less';
 
 const UserLayout = (props) => {

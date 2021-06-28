@@ -41,7 +41,7 @@ export default class IntroduceRow extends Component {
                             padding: '0px 24px 8px 24px',
                             fontSize: '35px',
                         }}>
-                        <Statistic prefix={<StarTwoTone />} title="Total records" value={recNum} />
+                        <Statistic prefix={<StarTwoTone />} title="Total Records" value={recNum} />
                     </Card>
                 </Col>
             </Row>

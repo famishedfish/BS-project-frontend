@@ -42,8 +42,7 @@ const UserModel = {
     saveCurrentUser(state, action) {
       return {  // TODO 完善头像
         ...state, 
-        currentUser: {...action.payload, avatar:'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'},
-        // subDevices: 
+        currentUser: {...action.payload, avatar:'https://z3.ax1x.com/2021/06/27/RYWlJU.jpg'},
       }
     },
 

@@ -26,37 +26,6 @@ const RecordModel = {
                 records: records
             }
         },
-
-
-        saveCurrentUser(state, action) {
-            return {  // TODO 完善头像
-                ...state,
-                currentUser: { ...action.payload, avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png' },
-            }
-        },
-
-        fetchCurrentUser(state, action) {
-            return {
-                ...state,
-                currentUser: { ...state.currentUser } || {},
-            }
-        },
-
-        changeNotifyCount(
-            state = {
-                currentUser: {},
-            },
-            action,
-        ) {
-            return {
-                ...state,
-                currentUser: {
-                    ...state.currentUser,
-                    notifyCount: action.payload.totalCount,
-                    unreadCount: action.payload.unreadCount,
-                },
-            };
-        },
     },
 };
 export default RecordModel;

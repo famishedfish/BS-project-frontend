@@ -1,82 +1,25 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'umi';
-import { Card } from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
-import moment from 'moment';
+import { PageContainer } from '@ant-design/pro-layout';;
 
+import { LineLayer, MapboxScene, Marker } from '@antv/l7-react';
 
 const Map = (props) => {
-    const { dispatch, currentUser, records, loading, updating } = props;
 
-    const tableQuery = (params, sorter, filter) => {
-        // dispatch({
-        //     type: 'login/update',
-        //     payload: { password: currentUser.password, name: currentUser.name },
-        // });
+    const { dispatch, currentUser, records } = props;
 
-        while (updating) { }
+    const [data, setData] = useState();
 
-        let data = records.slice()
-
-        // 只显示用户订阅的设备
-        const deviceList = currentUser.devices
-        data = data.filter((item) => {
-            return deviceList.indexOf(item.clientId) !== -1
-        });
-
-        const searchKeys = Object.keys(params).slice(2)
-        searchKeys.forEach((key) => {
-            const searchVal = params[key]
-            data = data.filter((item) => {
-                if (key === 'clientId') return item[key].indexOf(searchVal) !== -1
-                else {
-                    return moment(item[key]).format('YYYY-MM-DD') === searchVal
-                }
-            });
-        })
-
-        if (sorter) {
-            data = data.sort((prev, next) => {
-                let sortNumber = 0;
-                Object.keys(sorter).forEach((key) => {
-                    if (sorter[key] === 'descend') {
-                        if (prev[key] - next[key] > 0) {
-                            sortNumber += -1;
-                        } else {
-                            sortNumber += 1;
-                        }
-                        return;
-                    } else if (sorter[key] === 'ascend') {
-                        if (prev[key] - next[key] > 0) {
-                            sortNumber += 1;
-                        } else {
-                            sortNumber += -1;
-                        }
-                        return;
-                    }
-                });
-                return sortNumber;
-            });
-        }
-
-        if (filter) {
-            if (Object.keys(filter).length > 0) {
-                data = data.filter((item) => {
-                    return Object.keys(filter).some((key) => {
-                        if (!filter[key]) return true;
-                        if (filter[key].includes(`${item[key]}`)) return true;
-                        return false;
-                    });
-                });
-            }
-        }
-
-        const result = {
-            data: data,
-            success: true,
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await fetch(
+                'https://gw.alipayobjects.com/os/basement_prod/32e1f3ab-8588-46cb-8a47-75afb692117d.json',
+            );
+            const raw = await response.json();
+            setData(raw);
         };
-        return result;
-    }
+        fetchData();
+    }, []);
 
     useEffect(() => {
         if (dispatch) {
@@ -90,18 +33,73 @@ const Map = (props) => {
         }
     }, []);
 
+    function creatMarkers() {
+        // 只显示用户订阅的设备
+        const deviceList = currentUser.devices
+        const data = records.filter((item) => {
+            return deviceList.indexOf(item.clientId) !== -1
+        });
+
+        const markers = [];
+        let count = 0;
+        data.map((item) => {
+            count += 1;
+            let color = item.alert === 1 ? '#9a325e' : '#6790f2'
+            if (count <= 100) {
+                markers.push(<Marker option={{ color: color }} lnglat={[item.lng, item.lat]} />);
+            }
+        })
+        return markers;
+    }
+
     return (
-        <PageContainer loading={loading}>
-            <Card>
-                App
-            </Card>
+        <PageContainer >
+            <MapboxScene
+                map={{
+                    center: [120.14002669582967, 30.245842227935793],
+                    pitch: 0,
+                    style: 'dark',
+                    zoom: 11,
+                }}
+                style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '520px',
+                }}
+                option={{
+                    logoVisible: false
+                }}
+                onSceneLoaded={(params) => {
+                    console.log('mapScene: ', params)
+                }}
+            >
+                {data && (
+                    <LineLayer
+                        key={'2'}
+                        source={{
+                            data,
+                        }}
+                        size={{
+                            values: 1,
+                        }}
+                        color={{
+                            values: '#fff',
+                        }}
+                        shape={{
+                            values: 'line',
+                        }}
+                        style={{
+                            opacity: 0.5,
+                        }}
+                    />
+                )}
+                {creatMarkers()}
+            </MapboxScene>
         </PageContainer>
     );
 };
 
-export default connect(({ user, record, loading }) => ({
+export default connect(({ user, record }) => ({
     currentUser: user.currentUser,
     records: record.records,
-    loading: loading.models.record,
-    updating: loading.effects['login/update']
 }))(Map);

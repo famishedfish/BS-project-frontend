@@ -1,39 +1,9 @@
-/**
- * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
- *
- * @see You can view component api by: https://github.com/ant-design/ant-design-pro-layout
- */
 import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
-import React, { useEffect, useMemo, useRef } from 'react';
-import { Link, useIntl, connect, history } from 'umi';
+import React, { useEffect, useRef } from 'react';
+import { Link, connect, history } from 'umi';
 import { GithubOutlined } from '@ant-design/icons';
-import { Result, Button } from 'antd';
-import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
-import { getMatchMenu } from '@umijs/route-utils';
-import logo from '../assets/logo.svg';
-// const noMatch = (
-//   <Result
-//     status={403}
-//     title="403"
-//     subTitle="Sorry, you are not authorized to access this page."
-//     extra={
-//       <Button type="primary">
-//         <Link to="/user/login">Go Login</Link>
-//       </Button>
-//     }
-//   />
-// );
-
-/** Use Authorized check all menu item */
-// const menuDataRender = (menuList) =>
-//   menuList.map((item) => {
-//     const localItem = {
-//       ...item,
-//       children: item.children ? menuDataRender(item.children) : undefined,
-//     };
-//     return Authorized.check(item.authority, localItem, null);
-//   });
+import logo from '../assets/wifi.svg';
 
 const defaultFooterDom = (
   <DefaultFooter
@@ -80,20 +50,11 @@ const BasicLayout = (props) => {
         payload,
       });
     }
-  }; // get children authority
+  };
 
-  // const authorized = useMemo(
-  //   () =>
-  //     getMatchMenu(location.pathname || '/', menuDataRef.current).pop() || {
-  //       authority: undefined,
-  //     },
-  //   [location.pathname],
-  // );
-  const { formatMessage } = useIntl();
   return (
     <ProLayout
       logo={logo}
-      // formatMessage={formatMessage}
       title="eIoT System"
       {...props}
       onCollapse={handleMenuCollapse}
@@ -127,16 +88,13 @@ const BasicLayout = (props) => {
       footerRender={() => {
           return defaultFooterDom;
       }}
-      // menuDataRender={menuDataRender}
       rightContentRender={() => <RightContent />}
       postMenuData={(menuData) => {
         menuDataRef.current = menuData || [];
         return menuData || [];
       }}
     >
-      {/* <Authorized authority={authorized.authority} noMatch={noMatch}> */}
         {children}
-      {/* </Authorized> */}
     </ProLayout>
   );
 };
