@@ -7,7 +7,7 @@ const UserModel = {
     subDevices: [], // 用户订阅的设备
   },
   effects: {
-    *register({ payload }, { call, put }) {
+    *register({ payload }, { call, _ }) {
       const response = yield call(registerUser, payload);
 
       if (response.status === 'ok') {
@@ -24,14 +24,6 @@ const UserModel = {
       }
     },
 
-    *fetch(_, { call, put }) {
-      const response = yield call(queryUsers);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
-
     *fetchCurrent(_, { call, put }) {
       yield put({
         type: 'fetchCurrentUser',
@@ -40,33 +32,17 @@ const UserModel = {
   },
   reducers: {
     saveCurrentUser(state, action) {
-      return {  // TODO 完善头像
+      return { 
         ...state, 
         currentUser: {...action.payload, avatar:'https://z3.ax1x.com/2021/06/27/RYWlJU.jpg'},
       }
     },
 
-    fetchCurrentUser(state, action) {
+    fetchCurrentUser(state, _) {
       return {
         ...state, 
         currentUser: {...state.currentUser} || {},
       }
-    },
-
-    changeNotifyCount(
-      state = {
-        currentUser: {},
-      },
-      action,
-    ) {
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          notifyCount: action.payload.totalCount,
-          unreadCount: action.payload.unreadCount,
-        },
-      };
     },
   },
 };

@@ -8,7 +8,7 @@ export async function removeDevice(params) {
 export async function addDevice(params) {
   return request('/api/devices/add', {
     method: 'POST',
-    data: { ...params, method: 'post' },
+    data: { ...params },
   });
 }
 export async function updateDevice(params) {

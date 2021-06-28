@@ -8,7 +8,3 @@ export async function registerUser(params) {
     data: params,
   });
 }
-
-export async function queryNotices() {
-  return request('/api/notices');
-}

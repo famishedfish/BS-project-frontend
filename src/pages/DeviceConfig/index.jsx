@@ -366,6 +366,5 @@ export default connect(({ user, device, loading }) => ({
   currentUser: user.currentUser,
   devices: device.devices,
   loading: loading.models.device,
-  // updating: loading.models.login
   updating: loading.effects['login/update']
 }))(TableList);
