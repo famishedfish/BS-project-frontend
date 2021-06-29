@@ -3,6 +3,10 @@ Frontend of ZJU B/S project 2021.
 
 See [the backend](https://github.com/famishedfish/BS-project-backend).
 
+# Detailed information
+
+You can view [full document](https://github.com/famishedfish/BS-project-frontend/tree/master/document) and demo video. 
+
 # Tech stack
 [React](https://zh-hans.reactjs.org/)
 
@@ -16,12 +20,7 @@ See [the backend](https://github.com/famishedfish/BS-project-backend).
 
 [AntV L7](https://l7.antv.vision/)
 
-# Detailed information
-
-You can view [full document](https://github.com/famishedfish/BS-project-frontend/tree/master/document) and demo video. 
-
 # Quick start
-
 
 ## Environment Prepare
 
