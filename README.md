@@ -1,4 +1,4 @@
-# BS-project-backend
+# BS-project-frontend
 Frontend of ZJU B/S project 2021.
 
 See [the backend](https://github.com/famishedfish/BS-project-backend).
@@ -9,6 +9,16 @@ See [the backend](https://github.com/famishedfish/BS-project-backend).
 [Umi](https://umijs.org/)
 
 [DvaJS](https://dvajs.com/)
+
+[Ant Design](https://ant.design/)
+
+[Ant Design Pro](https://pro.ant.design/)
+
+[AntV L7](https://l7.antv.vision/)
+
+# Detailed information
+
+You can view [full document](https://github.com/famishedfish/BS-project-frontend/tree/master/document) and demo video. 
 
 # Quick start
 
@@ -54,7 +64,3 @@ npm run lint:fix
 ```bash
 npm test
 ```
-
-## More
-
-You can view full document on our [official website](https://pro.ant.design). And welcome any feedback in our [github](https://github.com/ant-design/ant-design-pro).
