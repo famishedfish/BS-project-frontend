@@ -1,5 +1,5 @@
 import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Link, connect, history } from 'umi';
 import { GithubOutlined } from '@ant-design/icons';
 import RightContent from '@/components/GlobalHeader/RightContent';
@@ -34,14 +34,6 @@ const BasicLayout = (props) => {
     },
   } = props;
   const menuDataRef = useRef([]);
-  useEffect(() => {
-    if (dispatch) {
-      dispatch({
-        type: 'user/fetchCurrent',
-      });
-    }
-  }, []);
-  /** Init variables */
 
   const handleMenuCollapse = (payload) => {
     if (dispatch) {

@@ -8,7 +8,6 @@ const DeviceModel = {
         total: 0,
         online: 0,
         devices: [],
-        newDev: [],
     },
     effects: {
         *fetch(_, { call, put }) {

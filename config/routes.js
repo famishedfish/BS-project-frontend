@@ -21,7 +21,6 @@ export default [
           {
             path: '/',
             component: '../layouts/BasicLayout',
-            authority: ['admin', 'user'],
             routes: [
               {
                 path: '/',
@@ -38,7 +37,6 @@ export default [
                 name: '数据管理',
                 icon: 'dashboard',
                 component: './DataList',
-                authority: ['admin'],
               },
               {
                 name: '数据地图',

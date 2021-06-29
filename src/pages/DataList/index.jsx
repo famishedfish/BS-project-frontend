@@ -54,14 +54,14 @@ const DataList = (props) => {
             hideInForm: true,
         },
         {
-            title: '经度',
+            title: '纬度',
             search: false,
             dataIndex: 'lat',
             valueType: 'textarea',
             renderText: (value) => value.toFixed(2),
         },
         {
-            title: '纬度',
+            title: '经度',
             search: false,
             dataIndex: 'lng',
             valueType: 'textarea',

@@ -1,4 +1,4 @@
-import { registerUser, query as queryUsers } from '@/services/user';
+import { registerUser } from '@/services/user';
 import { message } from 'antd';
 const UserModel = {
   namespace: 'user',
@@ -23,25 +23,12 @@ const UserModel = {
         message.error('邮箱已注册！');
       }
     },
-
-    *fetchCurrent(_, { call, put }) {
-      yield put({
-        type: 'fetchCurrentUser',
-      });
-    },
   },
   reducers: {
     saveCurrentUser(state, action) {
       return { 
         ...state, 
         currentUser: {...action.payload, avatar:'https://z3.ax1x.com/2021/06/27/RYWlJU.jpg'},
-      }
-    },
-
-    fetchCurrentUser(state, _) {
-      return {
-        ...state, 
-        currentUser: {...state.currentUser} || {},
       }
     },
   },

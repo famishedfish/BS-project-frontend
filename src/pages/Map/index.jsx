@@ -58,7 +58,7 @@ const Map = (props) => {
                 map={{
                     center: [120.14002669582967, 30.245842227935793],
                     pitch: 0,
-                    style: 'dark',
+                    style: 'normal',
                     zoom: 11,
                 }}
                 style={{
@@ -68,9 +68,6 @@ const Map = (props) => {
                 }}
                 option={{
                     logoVisible: false
-                }}
-                onSceneLoaded={(params) => {
-                    console.log('mapScene: ', params)
                 }}
             >
                 {data && (
