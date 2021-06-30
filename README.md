@@ -5,7 +5,7 @@ See [the backend](https://github.com/famishedfish/BS-project-backend).
 
 # Detailed information
 
-You can view [full document](https://github.com/famishedfish/BS-project-frontend/tree/master/document) and [demo video](https://github.com/famishedfish/BS-project-frontend/blob/master/document/demo.mp4). 
+You can view [full document](https://github.com/famishedfish/BS-project-frontend/tree/master/document/report.pdf) and [user manual](https://github.com/famishedfish/BS-project-frontend/blob/master/document/User%20manual.pdf) and [demo video](https://github.com/famishedfish/BS-project-frontend/blob/master/document/demo.mp4). 
 
 # Tech stack
 [React](https://zh-hans.reactjs.org/)
